@@ -287,6 +287,9 @@ inquirer
       )
     }
 
+    console.log(transformers);
+    console.log(transformerArgs);
+
     return executeTransformations({
       files: filesExpanded,
       flags: cli.flags,
