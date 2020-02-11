@@ -143,7 +143,7 @@ export default function tapeToJest(fileInfo, api, options) {
         .forEach(p => {
           const args = p.node.arguments
           const oldPropertyName = p.value.callee.property.name
-          const newPropertyName = tPropertiesMap[oldPropertyName]
+          let newPropertyName = tPropertiesMap[oldPropertyName]
 
           if (typeof newPropertyName === 'undefined') {
             logWarning(`"t.${oldPropertyName}" is currently not supported`, p)
@@ -180,8 +180,10 @@ export default function tapeToJest(fileInfo, api, options) {
             return j(p).replaceWith(condition)
           } else {
             const hasSecondArgument = PROP_WITH_SECONDS_ARGS.indexOf(newPropertyName) >= 0
-            const conditionArgs = hasSecondArgument ? [args[1]] : []
-            newCondition = j.callExpression(j.identifier(newPropertyName), conditionArgs)
+            if (args.length > (hasSecondArgument ? 2 : 1)) {
+              newPropertyName += 'Msg'
+            }
+            newCondition = j.callExpression(j.identifier(newPropertyName), args.slice(1))
           }
 
           const newExpression = j.memberExpression(
